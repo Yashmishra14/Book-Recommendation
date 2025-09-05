@@ -3,149 +3,735 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Recommendation</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style type="text/css">
-        body {
+    <title>About BookWorld - Discover Your Next Favorite Book</title>
+    <meta name="description" content="Learn about BookWorld's mission to help you discover amazing books through intelligent recommendations and comprehensive search features. Built with modern technology for the ultimate reading experience.">
+    <meta name="keywords" content="book recommendation, reading, books, AI recommendations, book discovery">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style">
+    
+    <!-- Stylesheets -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    
+    <style>
+        /* About Page Specific Styles */
+        .about-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .about-page::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .about-navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .about-navbar.scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .about-navbar.scrolled .nav-links a {
+            color: #333;
+        }
+
+        .about-navbar.scrolled .nav-logo {
+            color: #333;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-logo:hover {
+            transform: scale(1.05);
+            text-decoration: none;
+            color: white;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
             margin: 0;
             padding: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: linear-gradient(to right, white, rgb(123, 123, 244));
-            background-size: 300% 300%;
-            animation: gradientAnimation 15s ease infinite;
-            color: #333;
-            font-family: 'Arial', sans-serif;
-        }
-
-        @keyframes gradientAnimation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        nav {
-            background-color: #f8f8f8;
-            padding: 10px 0;
-            text-align: center;
         }
 
         .nav-links a {
-            margin: 0 15px;
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-        }
-
-        .nav-links a:hover { text-decoration: underline; }
-
-        #mode {
-            background-color: #5cb85c;
             color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-links a:hover::before {
+            left: 100%;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+
+        .theme-toggle {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
             border: none;
-            border-radius: 5px;
-            padding: 8px 12px;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        #mode:hover { background-color: #4cae4c; }
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
 
-        .about-container {
-            max-width: 800px;
-            margin: 60px auto;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        .about-main {
+            position: relative;
+            z-index: 10;
+            padding: 2rem 0;
+        }
+
+        .about-hero {
             text-align: center;
+            padding: 4rem 0;
+            color: white;
         }
 
-        .about-container h1, .about-container h2 {
-            color: #5cb85c;
+        .about-hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
         }
 
-        .about-container p {
-            font-size: 1em;
-            margin: 10px 0;
+        .about-hero h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 2px;
+        }
+
+        .about-hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
             line-height: 1.6;
         }
 
-        .team-section, .tech-section {
-            margin-top: 20px;
+        .about-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
         }
 
-        .tech-stack {
-            list-style: none;
-            padding: 0;
+        .about-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 2rem 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
         }
 
-        .tech-stack li {
-            background: #f4f2f2;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 5px 0;
+        .about-section.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        .dark {
-            background-color: black;
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .mission-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .mission-card {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 15px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .mission-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .mission-card i {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .mission-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .mission-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card i {
+            font-size: 2.5rem;
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .tech-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .tech-category {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .tech-category h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .tech-tag {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tech-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(78, 205, 196, 0.1));
+            border-radius: 15px;
+            border: 1px solid rgba(255, 107, 107, 0.2);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #ff6b6b;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .about-footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        /* Dark mode styles */
+        .dark .about-page {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        }
+
+        .dark .about-section {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dark .section-title {
             color: white;
         }
 
-        .light {
-            background-color: white;
-            color: black;
+        .dark .mission-card,
+        .dark .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .dark .mission-card h3,
+        .dark .feature-card h3 {
+            color: white;
+        }
+
+        .dark .mission-card p,
+        .dark .feature-card p {
+            color: #ccc;
+        }
+
+        .dark .tech-category {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dark .tech-category h3 {
+            color: white;
+        }
+
+        .dark .stat-item {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.2);
+        }
+
+        .dark .stat-label {
+            color: #ccc;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 0 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .about-hero {
+                padding: 2rem 0;
+            }
+
+            .about-hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .about-section {
+                padding: 2rem;
+                margin: 1rem 0;
+            }
+
+            .mission-grid,
+            .features-grid,
+            .tech-categories,
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .about-content {
+                padding: 0 1rem;
+            }
+
+            .about-section {
+                padding: 1.5rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
         }
     </style>
 </head>
-<body>
+<body class="about-page">
+    <!-- Navigation -->
+    {% include 'navbar.html' %}
     
-    <nav>
-        
-        <div class="nav-links">
-            <a href="/second">Home</a>
-            <a href="/recommend">Recommendations</a> <!-- Updated to anchor link -->
-                <a href="/about">About Us</a>
-                <a href="/dev">Developer</a>
-            <button id="mode">Change Mode</button>
-        </div>
-    </nav>
-    
-
-    <div class="about-container">
-        <h1>About Us</h1>
-        <p>Welcome to the Book Recommendation App! Our mission is to help book lovers find the best books based on their preferences and ratings from other readers. Whether you're into fiction, non-fiction, fantasy, or biographies, our app is here to make your next book selection easier and more enjoyable.</p>
-
-        <section class="team-section">
-            <h2>Our Team</h2>
-            <p><strong>Kartikay Srivastava</strong> </p>
-            <p><strong>Shivam Nishad</strong> </p>
-            <p><strong>Yash Chaurasia</strong> </p>
+    <!-- Main Content -->
+    <main class="about-main" role="main">
+        <!-- Hero Section -->
+        <section class="about-hero" aria-labelledby="about-title">
+            <div class="about-content">
+                <h1 id="about-title">About BookWorld</h1>
+                <p>Discovering your next favorite book through intelligent recommendations and comprehensive search features. We're passionate about connecting readers with stories that inspire, educate, and entertain.</p>
+            </div>
         </section>
 
-        <section class="tech-section">
-            <h2>Technology Stack</h2>
-            <p>We built this application using modern web technologies to ensure smooth performance and an enjoyable user experience.</p>
-            <ul class="tech-stack">
-                <li>Frontend: HTML, CSS, JavaScript, Bootstrap</li>
-                <li>Backend: Python (Flask/Django), REST APIs</li>
-                <li>Database: MySql</li>
-                <li>Data Processing: Pandas, Scikit-Learn (for recommendations)</li>
-                <li>Deployment: Heroku/AWS</li>
-            </ul>
+        <!-- Mission & Vision Section -->
+        <section class="about-section mission-section" aria-labelledby="mission-title">
+            <div class="about-content">
+                <h2 id="mission-title" class="section-title">Our Mission & Vision</h2>
+                <div class="mission-grid">
+                    <div class="mission-card">
+                        <i class="fas fa-bullseye" aria-hidden="true"></i>
+                        <h3>Our Mission</h3>
+                        <p>To revolutionize how people discover books by providing intelligent, personalized recommendations that connect readers with their next favorite story, making the journey of finding the perfect book effortless and enjoyable.</p>
+                    </div>
+                    
+                    <div class="mission-card">
+                        <i class="fas fa-eye" aria-hidden="true"></i>
+                        <h3>Our Vision</h3>
+                        <p>Creating a world where every reader can effortlessly find books that resonate with their interests, mood, and reading preferences, fostering a global community of passionate book lovers.</p>
+                    </div>
+                </div>
+            </div>
         </section>
+
+        <!-- Features Section -->
+        <section class="about-section features-section" aria-labelledby="features-title">
+            <div class="about-content">
+                <h2 id="features-title" class="section-title">What Makes Us Special</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-brain" aria-hidden="true"></i>
+                        <h3>AI-Powered Recommendations</h3>
+                        <p>Advanced machine learning algorithms analyze your preferences, reading history, and ratings to suggest perfect book matches tailored just for you.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                        <h3>Comprehensive Search</h3>
+                        <p>Browse through thousands of books with our intuitive A-Z search system, advanced filtering options, and smart categorization.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <h3>Community Ratings</h3>
+                        <p>Discover books loved by readers worldwide through our community-driven rating system and detailed reviews from fellow book enthusiasts.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-mobile-alt" aria-hidden="true"></i>
+                        <h3>Mobile-First Design</h3>
+                        <p>Enjoy a seamless reading discovery experience across all devices with our responsive, mobile-optimized interface.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technology Stack -->
+        <section class="about-section tech-section" aria-labelledby="tech-title">
+            <div class="about-content">
+                <h2 id="tech-title" class="section-title">Built With Modern Technology</h2>
+                <p style="text-align: center; color: #666; margin-bottom: 2rem; font-size: 1.1rem;">We leverage cutting-edge technologies to deliver a fast, reliable, and scalable book recommendation platform.</p>
+                <div class="tech-categories">
+                    <div class="tech-category">
+                        <h3>Frontend</h3>
+                        <div class="tech-tags">
+                            <span class="tech-tag">HTML5</span>
+                            <span class="tech-tag">CSS3</span>
+                            <span class="tech-tag">JavaScript</span>
+                            <span class="tech-tag">Bootstrap</span>
+                            <span class="tech-tag">Font Awesome</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tech-category">
+                        <h3>Backend</h3>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">Flask</span>
+                            <span class="tech-tag">REST APIs</span>
+                            <span class="tech-tag">Jinja2</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tech-category">
+                        <h3>Data & ML</h3>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Pandas</span>
+                            <span class="tech-tag">Scikit-Learn</span>
+                            <span class="tech-tag">NumPy</span>
+                            <span class="tech-tag">MySQL</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tech-category">
+                        <h3>Deployment</h3>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Heroku</span>
+                            <span class="tech-tag">AWS</span>
+                            <span class="tech-tag">Git</span>
+                            <span class="tech-tag">Docker</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics -->
+        <section class="about-section stats-section" aria-labelledby="stats-title">
+            <div class="about-content">
+                <h2 id="stats-title" class="section-title">Our Impact</h2>
+                <p style="text-align: center; color: #666; margin-bottom: 2rem; font-size: 1.1rem;">Numbers that speak to our commitment to book discovery excellence.</p>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="10000">0</span>
+                        <div class="stat-label">Books in Database</div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="50000">0</span>
+                        <div class="stat-label">Recommendations Made</div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="1000">0</span>
+                        <div class="stat-label">Happy Readers</div>
     </div>
 
-    <script>
-        function searchBooks() { window.location.href = "/recommend"; }
-        function about() { window.location.href = "/about"; }
-        function dev(){
-        window.location.href = "/dev";
-    }
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="99">0</span>
+                        <div class="stat-label">% Uptime</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
-        document.getElementById("mode").addEventListener("click", function() {
-            document.body.classList.toggle("dark");
+    <!-- Footer -->
+    <footer class="about-footer" role="contentinfo">
+        <div class="about-content">
+            <p>&copy; 2024 BookWorld. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Theme and navbar functionality is now handled by the navbar component
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all about sections
+        document.querySelectorAll('.about-section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Animated counter for statistics
+        function animateCounter(element, target) {
+            let current = 0;
+            const increment = target / 100;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current).toLocaleString();
+            }, 20);
+        }
+
+        // Trigger counter animation when stats section is visible
+        const statsObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statNumbers = entry.target.querySelectorAll('.stat-number');
+                    statNumbers.forEach(stat => {
+                        const target = parseInt(stat.getAttribute('data-target'));
+                        animateCounter(stat, target);
+                    });
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const statsSection = document.querySelector('.stats-section');
+        if (statsSection) {
+            statsObserver.observe(statsSection);
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add loading animation
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 200);
         });
     </script>
 </body>

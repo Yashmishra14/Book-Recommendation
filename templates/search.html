@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookWorld - A-Z Search</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <style>
+        .search-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        
+        .search-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .search-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .search-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .search-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .search-form {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .search-input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+        
+        .alphabet-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .alphabet-btn {
+            width: 45px;
+            height: 45px;
+            border: 2px solid #e9ecef;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .alphabet-btn:hover, .alphabet-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            text-decoration: none;
+        }
+        
+        .search-results {
+            margin-top: 30px;
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px 0;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .results-count {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .sort-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .sort-btn {
+            padding: 8px 15px;
+            border: 1px solid #e9ecef;
+            background: white;
+            border-radius: 20px;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .sort-btn:hover, .sort-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            text-decoration: none;
+        }
+        
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .book-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .book-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: #f0f0f0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .book-image[loading="lazy"] {
+            opacity: 0.7;
+        }
+        
+        .book-image:not([loading="lazy"]) {
+            opacity: 1;
+        }
+        
+        .book-info {
+            padding: 20px;
+        }
+        
+        .book-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .book-author {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .no-results i {
+            font-size: 4rem;
+            color: #e9ecef;
+            margin-bottom: 20px;
+        }
+        
+        .no-results h3 {
+            margin-bottom: 10px;
+        }
+        
+        .suggestions {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .suggestions h4 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .suggestion-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .suggestion-tag {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .suggestion-tag:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        .load-more-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .search-container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .search-title {
+                font-size: 2rem;
+            }
+            
+            .alphabet-nav {
+                gap: 8px;
+            }
+            
+            .alphabet-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 0.9rem;
+            }
+            
+            .books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body class="search-page">
+    <!-- Navigation -->
+    {% include 'navbar.html' %}
+
+    <div class="container">
+        <div class="search-container">
+            <div class="search-header">
+                <h1 class="search-title">A-Z Book Search</h1>
+                <p class="search-subtitle">Browse books alphabetically or search by keyword</p>
+            </div>
+
+            <div class="search-form">
+                <form id="searchForm" action="/search_books" method="POST">
+                    <div class="search-input-group">
+                        <input type="text" 
+                               id="searchInput" 
+                               name="keyword" 
+                               class="search-input" 
+                               placeholder="Search books by title or author..."
+                               autocomplete="off">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                    
+                    <div class="alphabet-nav">
+                        <a href="#" class="alphabet-btn active" data-letter="all">All</a>
+                        {% for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' %}
+                        <a href="#" class="alphabet-btn" data-letter="{{ letter }}">{{ letter }}</a>
+                        {% endfor %}
+                    </div>
+                    
+                    <input type="hidden" id="selectedLetter" name="letter" value="all">
+                </form>
+            </div>
+
+            <div id="searchResults" class="search-results">
+                <div class="loading" id="loadingIndicator" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Searching books...</p>
+                </div>
+                
+                <div id="resultsContent">
+                    <div class="results-header">
+                        <div class="results-count">
+                            Showing all books ({{ all_books|length }} total)
+                        </div>
+                        <div class="sort-options">
+                            <a href="#" class="sort-btn active" data-sort="title">Title A-Z</a>
+                            <a href="#" class="sort-btn" data-sort="author">Author A-Z</a>
+                        </div>
+                    </div>
+                    
+                    <div class="books-grid" id="booksGrid">
+                        {% for book in all_books %}
+                        <div class="book-card" data-title="{{ book['Book-Title']|lower }}" data-author="{{ book['Book-Author']|lower }}">
+                            <img src="{{ book['Image-URL-M'] }}" 
+                                 alt="{{ book['Book-Title'] }}" 
+                                 class="book-image"
+                                 loading="lazy"
+                                 onerror="this.src='https://via.placeholder.com/300x400/667eea/ffffff?text=Book+Cover'">
+                            <div class="book-info">
+                                <h3 class="book-title">{{ book['Book-Title'] }}</h3>
+                                <p class="book-author">{{ book['Book-Author'] }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="load-more-container" style="text-align: center; margin-top: 30px;">
+                        <p style="color: #666; margin-bottom: 15px;">Showing first 20 books. Use search or load more to explore.</p>
+                        <button class="btn btn-primary" onclick="loadMoreBooks()" id="loadMoreBtn">Load More Books</button>
+                        <div class="loading" id="loadMoreLoading" style="display: none;">
+                            <div class="spinner"></div>
+                            <p>Loading more books...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Theme functionality is now handled by the navbar component
+
+        $(document).ready(function() {
+            let currentSort = 'title';
+            let currentLetter = 'all';
+            let allBooks = [];
+            
+            // Handle URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchQuery = urlParams.get('q');
+            if (searchQuery) {
+                $('#searchInput').val(searchQuery);
+                filterBooks();
+            }
+            
+            // Store all books data
+            $('.book-card').each(function() {
+                allBooks.push({
+                    element: $(this),
+                    title: $(this).data('title'),
+                    author: $(this).data('author'),
+                    originalTitle: $(this).find('.book-title').text(),
+                    originalAuthor: $(this).find('.book-author').text()
+                });
+            });
+            
+            // Alphabet navigation
+            $('.alphabet-btn').click(function(e) {
+                e.preventDefault();
+                $('.alphabet-btn').removeClass('active');
+                $(this).addClass('active');
+                
+                currentLetter = $(this).data('letter');
+                $('#selectedLetter').val(currentLetter);
+                
+                // Reset offset and reload books for the selected letter
+                currentOffset = 0;
+                loadBooksForLetter();
+            });
+            
+            // Function to load books for a specific letter
+            function loadBooksForLetter() {
+                $('#booksGrid').empty();
+                allBooks = [];
+                currentOffset = 0;
+                
+                $.ajax({
+                    url: '/load_more_books',
+                    method: 'GET',
+                    data: {
+                        offset: 0,
+                        limit: 50,
+                        letter: currentLetter
+                    },
+                    success: function(response) {
+                        if (response.books && response.books.length > 0) {
+                            response.books.forEach(function(book) {
+                                const bookCard = createBookCard(book);
+                                $('#booksGrid').append(bookCard);
+                                allBooks.push({
+                                    element: $(bookCard),
+                                    title: book['Book-Title'].toLowerCase(),
+                                    author: book['Book-Author'].toLowerCase(),
+                                    originalTitle: book['Book-Title'],
+                                    originalAuthor: book['Book-Author']
+                                });
+                            });
+                            
+                            currentOffset = response.books.length;
+                            
+                            if (response.has_more) {
+                                $('#loadMoreBtn').show().text('Load More Books').prop('disabled', false);
+                            } else {
+                                $('#loadMoreBtn').text('No More Books').prop('disabled', true);
+                            }
+                            
+                            updateResultsCount(allBooks.length);
+                        } else {
+                            $('#booksGrid').html('<div class="col-12 text-center"><p>No books found for this letter.</p></div>');
+                            $('#loadMoreBtn').hide();
+                        }
+                    },
+                    error: function() {
+                        alert('Error loading books. Please try again.');
+                    }
+                });
+            }
+            
+            // Search input
+            let searchTimeout;
+            $('#searchInput').on('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function() {
+                    filterBooks();
+                }, 300);
+            });
+            
+            // Sort options
+            $('.sort-btn').click(function(e) {
+                e.preventDefault();
+                $('.sort-btn').removeClass('active');
+                $(this).addClass('active');
+                
+                currentSort = $(this).data('sort');
+                sortBooks();
+            });
+            
+            function filterBooks() {
+                const keyword = $('#searchInput').val().toLowerCase();
+                const letter = currentLetter;
+                
+                let visibleCount = 0;
+                
+                allBooks.forEach(function(book) {
+                    let show = true;
+                    
+                    // Filter by letter
+                    if (letter !== 'all') {
+                        show = show && book.originalTitle.toLowerCase().startsWith(letter.toLowerCase());
+                    }
+                    
+                    // Filter by keyword
+                    if (keyword) {
+                        show = show && (book.title.includes(keyword) || book.author.includes(keyword));
+                    }
+                    
+                    if (show) {
+                        book.element.show();
+                        visibleCount++;
+                    } else {
+                        book.element.hide();
+                    }
+                });
+                
+                updateResultsCount(visibleCount);
+            }
+            
+            function sortBooks() {
+                const container = $('#booksGrid');
+                const books = container.children('.book-card:visible').toArray();
+                
+                books.sort(function(a, b) {
+                    const aTitle = $(a).data('title');
+                    const bTitle = $(b).data('title');
+                    const aAuthor = $(a).data('author');
+                    const bAuthor = $(b).data('author');
+                    
+                    if (currentSort === 'title') {
+                        return aTitle.localeCompare(bTitle);
+                    } else {
+                        return aAuthor.localeCompare(bAuthor);
+                    }
+                });
+                
+                container.empty().append(books);
+            }
+            
+            function updateResultsCount(count) {
+                const total = allBooks.length;
+                let text = `Showing ${count} of ${total} books`;
+                
+                if (currentLetter !== 'all') {
+                    text += ` starting with "${currentLetter.toUpperCase()}"`;
+                }
+                
+                if ($('#searchInput').val()) {
+                    text += ` matching "${$('#searchInput').val()}"`;
+                }
+                
+                $('.results-count').text(text);
+            }
+            
+            // Real-time search suggestions (optional enhancement)
+            $('#searchInput').on('input', function() {
+                const keyword = $(this).val();
+                if (keyword.length >= 2) {
+                    // Could implement AJAX search suggestions here
+                    // fetch('/search_books_api?q=' + encodeURIComponent(keyword))
+                    //     .then(response => response.json())
+                    //     .then(data => {
+                    //         // Show suggestions
+                    //     });
+                }
+            });
+            
+            // Book card click handler (for both existing and dynamically loaded books)
+            $(document).on('click', '.book-card', function() {
+                const title = $(this).find('.book-title').text();
+                // Redirect to recommendation page with the selected book
+                window.location.href = '/recommend?book=' + encodeURIComponent(title);
+            });
+            
+            // Load more books function
+                    let currentOffset = 20; // Start from 20 since we already loaded 20
+        let isLoading = false;
+            
+            window.loadMoreBooks = function() {
+                if (isLoading) return;
+                
+                isLoading = true;
+                $('#loadMoreBtn').hide();
+                $('#loadMoreLoading').show();
+                
+                $.ajax({
+                    url: '/load_more_books',
+                    method: 'GET',
+                    data: {
+                        offset: currentOffset,
+                        limit: 20,
+                        letter: currentLetter
+                    },
+                    success: function(response) {
+                        if (response.books && response.books.length > 0) {
+                            // Add new books to the grid
+                            response.books.forEach(function(book) {
+                                const bookCard = createBookCard(book);
+                                $('#booksGrid').append(bookCard);
+                                allBooks.push({
+                                    element: $(bookCard),
+                                    title: book['Book-Title'].toLowerCase(),
+                                    author: book['Book-Author'].toLowerCase(),
+                                    originalTitle: book['Book-Title'],
+                                    originalAuthor: book['Book-Author']
+                                });
+                            });
+                            
+                            currentOffset += response.books.length;
+                            
+                            // Show load more button if there are more books
+                            if (response.has_more) {
+                                $('#loadMoreBtn').show();
+                            } else {
+                                $('#loadMoreBtn').text('No More Books').prop('disabled', true);
+                            }
+                            
+                            updateResultsCount(allBooks.length);
+                        } else {
+                            $('#loadMoreBtn').text('No More Books').prop('disabled', true);
+                        }
+                    },
+                    error: function() {
+                        alert('Error loading more books. Please try again.');
+                        $('#loadMoreBtn').show();
+                    },
+                    complete: function() {
+                        isLoading = false;
+                        $('#loadMoreLoading').hide();
+                    }
+                });
+            };
+            
+            // Function to create book card HTML
+            function createBookCard(book) {
+                return $(`
+                    <div class="book-card" data-title="${book['Book-Title'].toLowerCase()}" data-author="${book['Book-Author'].toLowerCase()}">
+                        <img src="${book['Image-URL-M']}" 
+                             alt="${book['Book-Title']}" 
+                             class="book-image"
+                             loading="lazy"
+                             onerror="this.src='https://via.placeholder.com/300x400/667eea/ffffff?text=Book+Cover'">
+                        <div class="book-info">
+                            <h3 class="book-title">${book['Book-Title']}</h3>
+                            <p class="book-author">${book['Book-Author']}</p>
+                        </div>
+                    </div>
+                `);
+            }
+        });
+    </script>
+</body>
+</html>

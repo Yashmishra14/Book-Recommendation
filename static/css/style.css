@@ -1,767 +1,934 @@
-body {
+/* ========================================
+   BOOKWORLD - MODERN CSS FRAMEWORK
+   ======================================== */
+
+/* CSS Reset & Base Styles */
+* {
     margin: 0;
     padding: 0;
-    height: 100vh;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Color Palette */
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --secondary-gradient: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+    --accent-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    
+    /* Colors */
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --accent-color: #ff6b6b;
+    --success-color: #4ecdc4;
+    --warning-color: #ffd700;
+    --danger-color: #ff6b6b;
+    --info-color: #45b7d1;
+    
+    /* Text Colors */
+    --text-primary: #333;
+    --text-secondary: #666;
+    --text-light: #999;
+    --text-white: #fff;
+    
+    /* Background Colors */
+    --bg-primary: #fff;
+    --bg-secondary: #f8f9fa;
+    --bg-dark: #1a1a1a;
+    --bg-glass: rgba(255, 255, 255, 0.1);
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.2);
+    --shadow-xl: 0 16px 32px rgba(0, 0, 0, 0.25);
+    
+    /* Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-xl: 30px;
+    
+    /* Spacing */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    
+    /* Typography */
+    --font-primary: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+    --font-size-5xl: 3rem;
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+    --transition-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Base Styles */
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    font-family: var(--font-primary);
+    line-height: 1.6;
+    color: var(--text-primary);
+    background: var(--primary-gradient);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: var(--space-md);
+}
+
+h1 { font-size: var(--font-size-5xl); }
+h2 { font-size: var(--font-size-4xl); }
+h3 { font-size: var(--font-size-3xl); }
+h4 { font-size: var(--font-size-2xl); }
+h5 { font-size: var(--font-size-xl); }
+h6 { font-size: var(--font-size-lg); }
+
+p {
+    margin-bottom: var(--space-md);
+    color: var(--text-secondary);
+}
+
+/* Utility Classes */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.text-primary { color: var(--primary-color); }
+.text-secondary { color: var(--text-secondary); }
+.text-white { color: var(--text-white); }
+.text-accent { color: var(--accent-color); }
+
+.bg-primary { background: var(--bg-primary); }
+.bg-secondary { background: var(--bg-secondary); }
+.bg-glass { background: var(--bg-glass); }
+
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-xl { box-shadow: var(--shadow-xl); }
+
+.rounded-sm { border-radius: var(--radius-sm); }
+.rounded-md { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-xl); }
+
+/* Animation Classes */
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all var(--transition-slow);
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.slide-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all var(--transition-slow);
+}
+
+.slide-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.scale-in {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all var(--transition-slow);
+}
+
+.scale-in.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Button Styles */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-xl);
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn-primary {
+    background: var(--primary-gradient);
+    color: var(--text-white);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary {
+    background: var(--secondary-gradient);
+    color: var(--text-white);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--text-white);
+    border: 2px solid var(--text-white);
+}
+
+.btn-outline:hover {
+    background: var(--text-white);
+    color: var(--primary-color);
+}
+
+/* Card Styles */
+.card {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    transition: all var(--transition-normal);
+    position: relative;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl);
+}
+
+.card-header {
+    padding: var(--space-lg);
+    border-bottom: 1px solid #eee;
+    background: var(--bg-secondary);
+}
+
+.card-body {
+    padding: var(--space-lg);
+}
+
+.card-footer {
+    padding: var(--space-lg);
+    border-top: 1px solid #eee;
+    background: var(--bg-secondary);
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: var(--space-lg);
+}
+
+.form-label {
+    display: block;
+    margin-bottom: var(--space-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.form-control {
+    width: 100%;
+    padding: var(--space-md);
+    border: 2px solid #e1e5e9;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    transition: all var(--transition-normal);
+    background: var(--bg-primary);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-control::placeholder {
+    color: var(--text-light);
+}
+
+/* Navigation Styles */
+.navbar {
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding: var(--space-md) 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: all var(--transition-normal);
+}
+
+.navbar.scrolled {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--shadow-md);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 var(--space-lg);
+}
+
+.nav-links {
+    display: flex;
+    gap: var(--space-xl);
+    list-style: none;
+}
+
+.nav-links a {
+    color: var(--text-white);
+    text-decoration: none;
+    font-weight: 500;
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-xl);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-links a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.nav-links a:hover::before {
+    left: 100%;
+}
+
+.nav-links a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Grid System */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -var(--space-md);
+}
+
+.col {
+    flex: 1;
+    padding: 0 var(--space-md);
+}
+
+.col-1 { flex: 0 0 8.333333%; }
+.col-2 { flex: 0 0 16.666667%; }
+.col-3 { flex: 0 0 25%; }
+.col-4 { flex: 0 0 33.333333%; }
+.col-6 { flex: 0 0 50%; }
+.col-8 { flex: 0 0 66.666667%; }
+.col-9 { flex: 0 0 75%; }
+.col-12 { flex: 0 0 100%; }
+
+/* Book Grid */
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-xl);
+    margin-top: var(--space-xl);
+}
+
+.book-card {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+    position: relative;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.book-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--secondary-gradient);
+    background-size: 400% 400%;
+    animation: gradientShift 3s ease infinite;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    z-index: 1;
+}
+
+.book-card:hover::before {
+    opacity: 0.1;
+}
+
+.book-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: var(--shadow-xl);
+    border-color: rgba(102, 126, 234, 0.3);
+}
+
+/* Enhanced book card animations */
+.book-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Staggered animation for book cards */
+.book-card:nth-child(1) { animation-delay: 0.1s; }
+.book-card:nth-child(2) { animation-delay: 0.2s; }
+.book-card:nth-child(3) { animation-delay: 0.3s; }
+.book-card:nth-child(4) { animation-delay: 0.4s; }
+.book-card:nth-child(5) { animation-delay: 0.5s; }
+.book-card:nth-child(6) { animation-delay: 0.6s; }
+.book-card:nth-child(7) { animation-delay: 0.7s; }
+.book-card:nth-child(8) { animation-delay: 0.8s; }
+
+.book-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    transition: transform var(--transition-normal);
+    position: relative;
+    z-index: 2;
+}
+
+.book-card:hover .book-image {
+    transform: scale(1.05);
+}
+
+.book-info {
+    padding: var(--space-lg);
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.05) 100%);
+}
+
+.book-title {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color var(--transition-normal);
+}
+
+.book-card:hover .book-title {
+    color: var(--primary-color);
+}
+
+.book-author {
+    color: var(--text-secondary);
+    font-size: var(--font-size-base);
+    margin-bottom: var(--space-md);
+    font-weight: 500;
+    transition: color var(--transition-normal);
+}
+
+.book-card:hover .book-author {
+    color: var(--text-primary);
+}
+
+.book-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+    padding-top: var(--space-sm);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.book-rating {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--accent-color);
+    font-weight: 600;
+    transition: all var(--transition-normal);
+}
+
+.book-card:hover .book-rating {
+    transform: scale(1.05);
+}
+
+.book-votes {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    transition: color var(--transition-normal);
+}
+
+.book-card:hover .book-votes {
+    color: var(--text-primary);
+}
+
+.rating-stars {
+    color: var(--warning-color);
+    font-size: var(--font-size-lg);
+    transition: all var(--transition-normal);
+}
+
+.book-card:hover .rating-stars {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3));
+}
+
+/* Add a subtle glow effect to the entire card */
+.book-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.book-card:hover::after {
+    opacity: 1;
+}
+
+/* Loading Animations */
+.loading {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(to left ,rgba(110, 142, 251, 0.8), rgba(221, 115, 40, 0.995));
-    background-size: 200% 200%;
-    animation: gradientAnimation 11s ease infinite;
-    color: white;
-    text-align: center;
-    font-family: Arial, sans-serif;
+    height: 200px;
 }
-        /* Inline CSS for styling */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            font-family: Arial, sans-serif;
-            /* background-color: #f0f0f0; */
-        }
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
 
-        .login-container {
-            width: 300px;
-            padding: 20px;
-            background-color: #ffffff;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333333;
-        }
+/* Keyframe Animations */
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
-        label {
-            margin-top: 10px;
-            display: block;
-            color: #333333;
-        }
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
 
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-15px);
+    }
+    60% {
+        transform: translateY(-8px);
+    }
+}
 
-        button:hover {
-            background-color: #45a049;
-        }
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
 
-        .cursor {
-        position: fixed;
-        width: 15px; /* Slightly larger for more visibility */
-        height: 15px;
-        border-radius: 50%;
-        background: rgb(125, 123, 255); /* Light blue color */
-        pointer-events: none;
-        transform: translate(-50%, -50%);
-        transition: transform 0.2s ease, background 0.3s ease;
-        z-index: 1000;
-        box-shadow: 0 0 5px rgba(0, 174, 255, 0.6); /* Glowing effect */
-        }
+@keyframes ripple {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
 
-        .cursor::after {
-            content: '';
-            position: absolute;
-            width: 50px; /* Ripple size */
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(0, 174, 255, 0.3); /* Lighter blue for ripple */
-            transform: translate(-50%, -50%) scale(0);
-            transition: transform 0.5s ease-out;
-            pointer-events: none; /* Prevent interaction */
-            z-index: -1; /* Behind the cursor */
-        }
+/* Dark Theme */
+.dark-theme {
+    --text-primary: #fff;
+    --text-secondary: #ccc;
+    --text-light: #999;
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2a2a2a;
+    --bg-glass: rgba(0, 0, 0, 0.3);
+}
 
-        .cursor.ripple::after {
-            transform: translate(-50%, -50%) scale(1); /* Activate ripple */
-            opacity: 0; /* Fade out effect */
-            transition: transform 0.5s ease-out, opacity 0.5s ease-out; /* Combine transition */
-        }
+.dark-theme .navbar {
+    background: rgba(0, 0, 0, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
 
+.dark-theme .card {
+    background: var(--bg-primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: radial-gradient(circle,rgba(110, 142, 251, 0.8), rgba(167, 119, 227, 0.8));
-            background-size: 200% 200%;
-            animation: gradientAnimation 11s ease infinite;
-            color: white;
-            text-align: center;
-            font-family: Arial, sans-serif;
-        }
-        
-        
-                .home-container {
-                    width: 300px;
-                    text-align: center;
-                    padding: 20px;
-                    background-color: #ffffff;
-                    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-                    border-radius: 8px;
-                }
-        
-                
-                input[type="text"] {
-                    width: 100%;
-                    padding: 8px;
-                    margin-top: 10px;
-                    margin-bottom: 10px;
-                    border: 1px solid #ccc;
-                    border-radius: 4px;
-                }
-        
-                button {
-                    width: 100%;
-                    padding: 10px;
-                    background-color: #4CAF50;
-                    color: white;
-                    border: none;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    font-size: 16px;
-                }
-        
-                button:hover {
-                    background-color: #45a049;
-                }
-        
-                #results {
-                    margin-top: 20px;
-                    text-align: left;
-                }
-        
-                #results p {
-                    padding: 5px;
-                    background-color: #f9f9f9;
-                    border: 1px solid #ddd;
-                    border-radius: 4px;
-                    margin-bottom: 5px;
-                }
-        
-                .cursor {
-                position: fixed;
-                width: 15px; /* Slightly larger for more visibility */
-                height: 15px;
-                border-radius: 50%;
-                background: rgb(125, 123, 255); /* Light blue color */
-                pointer-events: none;
-                transform: translate(-50%, -50%);
-                transition: transform 0.2s ease, background 0.3s ease;
-                z-index: 1000;
-                box-shadow: 0 0 5px rgba(0, 174, 255, 0.6); /* Glowing effect */
-                }
-        
-                .cursor::after {
-                    content: '';
-                    position: absolute;
-                    width: 50px; /* Ripple size */
-                    height: 50px;
-                    border-radius: 50%;
-                    background: rgba(0, 174, 255, 0.3); /* Lighter blue for ripple */
-                    transform: translate(-50%, -50%) scale(0);
-                    transition: transform 0.5s ease-out;
-                    pointer-events: none; /* Prevent interaction */
-                    z-index: -1; /* Behind the cursor */
-                }
-        
-        
-                .container {
-                cursor: pointer;
-                background: rgba(0, 0, 0, 0.7); /* Semi-transparent background for readability */
-                padding: 20px;
-                border-radius: 10px;
-                position: relative; /* Position for hover message */
-                }
-        
-        
-                @keyframes bounce {
-                0%, 20%, 50%, 80%, 100% {
-                    transform: translateY(0);
-                    }
-                40% {
-                    transform: translateY(-20px);
-                    }
-                60% {
-                    transform: translateY(-10px);
-                    }
-                }
-        
-                .hover-message {
-                    display: none;
-                    position: absolute;
-                    bottom: 10px;
-                    left: 50%;
-                    transform: translateX(-50%) scale(0); /* Initially scale to 0 */
-                    background-color: rgba(255, 255, 255, 0.8);
-                    color: #333;
-                    padding: 10px;
-                    border-radius: 5px;
-                    transition: opacity 0.3s ease, transform 0.3s ease; /* Transition for opacity and scaling */
-                    opacity: 0; /* Initially hidden */
-                }
-        
-                .container:hover .hover-message {
-                    display: block; /* Make it block to apply transitions */
-                    opacity: 1; /* Fade in */
-                    transform: translateX(-50%) scale(1); /* Scale up */
-                }
-        
-                .logo {
-                width: 150px;
-                height: auto; /* Maintain aspect ratio */
-                }
-        
-                .bounce {
-                    display: inline-block;
-                    animation: bounce 1s infinite;
-                }
-        
-                .cursor.ripple::after {
-                    transform: translate(-50%, -50%) scale(1); /* Activate ripple */
-                    opacity: 0; /* Fade out effect */
-                    transition: transform 0.5s ease-out, opacity 0.5s ease-out; /* Combine transition */
-                }
+.dark-theme .form-control {
+    background: var(--bg-primary);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-white);
+}
 
+/* Enhanced Dark Theme for Book Cards */
+.dark-theme .book-card {
+    background: var(--bg-primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
 
+.dark-theme .book-card:hover {
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.2);
+}
 
+.dark-theme .book-title {
+    color: var(--text-white);
+}
 
-                body {
-                    margin: 0;
-                    padding: 0;
-                    height: 100vh;
-                    display: flex;
-                    flex-direction: column;
-                    /* background: linear-gradient(to right,white,blue); */
-                    background: linear-gradient(to left ,rgba(110, 142, 251, 0.8), rgba(221, 115, 40, 0.995));
-                    background-size: 300% 300%; /* Allow for animation */
-                    animation: gradientAnimation 15s ease infinite; /* Animate the gradient */
-                    color: #333;
-                    font-family: 'Arial', sans-serif;
-                    transition: background-color 0.5s ease;
-                }
-                
-                @keyframes gradientAnimation {
-                    0% {
-                        background-position: 0% 50%;
-                    }
-                    50% {
-                        background-position: 100% 50%;
-                    }
-                    100% {
-                        background-position: 0% 50%;
-                    }
-                }
-                
-                header {
-                    position: absolute;
-                    top: 20px;
-                    left: 20px;
-                    text-align: center;
-                }
-                
-                .header-wrapper {
-                    display: flex;
-                    align-items: center;
-                }
-                
-                    /* this is use to so effect like typing*/  */
-                
-                
-                .header-text {
-                    font-size: 1.0em;
-                    margin: 0 8px; /* Space around the text */
-                    opacity: 0; /* Start hidden */
-                    transition: opacity 0.5s ease, transform 0.5s ease; /* Smooth transition for opacity and movement */
-                }
-                .cursor {
-                    display: inline-block;
-                    width: 2px;
-                    height: 1.5em;
-                    background: #5cb85c; /* Cursor color */
-                    animation: blink 1s step-end infinite; /* Blinking effect */
-                }
-                
-                @keyframes blink {
-                    50% { opacity: 0; }
-                }
-                
-                
-                .visible {
-                    opacity: 1; /* Make text visible */
-                }
-                
-                .hidden {
-                    opacity: 0; /* Hide text */
-                    transform: translateY(-10px); /* Move text up slightly when hiding */
-                }
-                
-                button {
-                    margin-bottom: 10px; /* Space between button and header */
-                    padding: 10px;
-                    border: none;
-                    border-radius: 5px;
-                    background-color: #5cb85c;
-                    color: white;
-                    cursor: pointer;
-                    transition: background-color 0.3s ease;
-                }
-                
-                button:hover {
-                    background-color: #4cae4c;
-                }
-                
-                
-                .container {
-                    background: rgba(255, 255, 255, 0.9);
-                    border-radius: 15px;
-                    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-                    padding: 30px;
-                    text-align: center;
-                    margin-top: 100px;
-                    margin-left: 35%;
-                    width: 90%;
-                    max-width: 400px;
-                    animation: fadeIn 1s ease;
-                }
-                
-                #search
-                {
-                    height: 20px;
-                    width: 100%;
-                    border: 2px solid black;
-                    border-radius: 50%;
-                }
-                
-                @keyframes fadeIn {
-                    from {
-                        opacity: 0;
-                        transform: translateY(-20px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-                
-                
-                form {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 15px;
-                }
-                
-                select, input[type="text"] {
-                    padding: 12px;
-                    border: 2px solid #5cb85c;
-                    border-radius: 5px;
-                    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-                    font-size: 1em;
-                }
-                
-                select:focus, input[type="text"]:focus {
-                    border-color: #4cae4c;
-                    box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
-                    outline: none;
-                }
-                
-                button {
-                    padding: 12px;
-                    background-color: #5cb85c;
-                    color: white;
-                    border: none;
-                    border-radius: 5px;
-                    cursor: pointer;
-                    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-                    font-size: 1em;
-                }
-                
-                button:hover {
-                    background-color: #4cae4c;
-                    transform: scale(1.05);
-                    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-                }
-                
-                /* for recommend books that shows on browser */
-                .book-gallery {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-                    gap: 20px;
-                    padding: 20px;
-                }
-                
-                .book-box {
-                    background: white;
-                    border-radius: 10px;
-                    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-                    text-align: center;
-                    padding: 15px;
-                    transition: transform 0.3s ease, box-shadow 0.3s ease;
-                }
-                
-                .book-box:hover {
-                    transform: translateY(-5px);
-                    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-                }
-                
-                .book-box img {
-                    max-width: 100%;
-                    border-radius: 5px;
-                    transition: transform 0.3s ease;
-                }
-                
-                .book-box img:hover {
-                    transform: scale(1.05);
-                }
-                
-                
-                .heading{
-                    margin-left: 50px;
-                }
-                
-                
-                /* for the top nav bar  */
-                nav {
-                    background-color: #f8f8f8;
-                    padding: 10px 0;
-                    text-align: center;
-                }
-                
-                .nav-links {
-                    display: inline-block;
-                }
-                
-                .nav-links a {
-                    margin: 0 15px;
-                    text-decoration: none;
-                    color: #333;
-                    font-weight: bold;
-                }
-                
-                .nav-links a:hover {
-                    text-decoration: underline;
-                }
-                html {
-                    scroll-behavior: smooth;
-                }
-                
-                #genre{
-                    cursor:pointer;
-                }
-                
-                
-                .dark{
-                    background-color: black;
-                    color: white;
-                
-                }
-                .light{
-                    background-color: white;
-                    color: black;
-                }
-                
-                
-                
-                body {
-                            background-color: #ffffff;
-                        }
-                        .text-white {
-                            color: #0a0a0a00;
-                        }
-                        .box {
-                            padding: 20px;
-                        }
-                        .card {
-                            background-color: #f4f2f2;
-                            border: none;
-                        }
-                        .card img {
-                            max-height: 300px;
-                            object-fit: cover;
-                        }
+.dark-theme .book-author {
+    color: var(--text-secondary);
+}
 
-                        
+.dark-theme .book-votes {
+    color: var(--text-light);
+}
 
+.dark-theme .book-rating {
+    color: var(--accent-color);
+}
 
-                        body {
-                            margin: 0;
-                            padding: 0;
-                            height: 100vh;
-                            display: flex;
-                            flex-direction: column;
-                            background: linear-gradient(to right,white,blue);
-                            background-size: 300% 300%; /* Allow for animation */
-                            animation: gradientAnimation 15s ease infinite; /* Animate the gradient */
-                            color: #333;
-                            font-family: 'Arial', sans-serif;
-                            transition: background-color 0.5s ease;
-                        }
-                        
-                        @keyframes gradientAnimation {
-                            0% {
-                                background-position: 0% 50%;
-                            }
-                            50% {
-                                background-position: 100% 50%;
-                            }
-                            100% {
-                                background-position: 0% 50%;
-                            }
-                        }
-                        
-                        header {
-                            position: absolute;
-                            top: 20px;
-                            left: 20px;
-                            text-align: center;
-                        }
-                        
-                        .header-wrapper {
-                            display: flex;
-                            align-items: center;
-                        }
-                        
-                            /* this is use to so effect like typing*/  */
-                        
-                        
-                        .header-text {
-                            font-size: 1.5em;
-                            margin: 0 10px; /* Space around the text */
-                            opacity: 0; /* Start hidden */
-                            transition: opacity 0.5s ease, transform 0.5s ease; /* Smooth transition for opacity and movement */
-                        }
-                        .cursor {
-                            display: inline-block;
-                            width: 2px;
-                            height: 1.5em;
-                            background: #5cb85c; /* Cursor color */
-                            animation: blink 1s step-end infinite; /* Blinking effect */
-                        }
-                        
-                        @keyframes blink {
-                            50% { opacity: 0; }
-                        }
-                        
-                        
-                        .visible {
-                            opacity: 1; /* Make text visible */
-                        }
-                        
-                        .hidden {
-                            opacity: 0; /* Hide text */
-                            transform: translateY(-10px); /* Move text up slightly when hiding */
-                        }
-                        
-                        button {
-                            margin-bottom: 10px; /* Space between button and header */
-                            padding: 10px;
-                            border: none;
-                            border-radius: 5px;
-                            background-color: #5cb85c;
-                            color: white;
-                            cursor: pointer;
-                            transition: background-color 0.3s ease;
-                        }
-                        
-                        button:hover {
-                            background-color: #4cae4c;
-                        }
-                        
-                        
-                        .container {
-                            background: rgba(255, 255, 255, 0.9);
-                            border-radius: 15px;
-                            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-                            padding: 30px;
-                            text-align: center;
-                            margin-top: 100px;
-                            margin-left: 35%;
-                            width: 90%;
-                            max-width: 400px;
-                            animation: fadeIn 1s ease;
-                        }
-                        
-                        #search
-                        {
-                            height: 20px;
-                            width: 100%;
-                            border: 2px solid black;
-                            border-radius: 50%;
-                        }
-                        
-                        @keyframes fadeIn {
-                            from {
-                                opacity: 0;
-                                transform: translateY(-20px);
-                            }
-                            to {
-                                opacity: 1;
-                                transform: translateY(0);
-                            }
-                        }
-                        
-                        
-                        form {
-                            display: flex;
-                            flex-direction: column;
-                            gap: 15px;
-                        }
-                        
-                        select, input[type="text"] {
-                            padding: 12px;
-                            border: 2px solid #5cb85c;
-                            border-radius: 5px;
-                            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-                            font-size: 1em;
-                        }
-                        
-                        select:focus, input[type="text"]:focus {
-                            border-color: #4cae4c;
-                            box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
-                            outline: none;
-                        }
-                        
-                        button {
-                            padding: 12px;
-                            background-color: #5cb85c;
-                            color: white;
-                            border: none;
-                            border-radius: 5px;
-                            cursor: pointer;
-                            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-                            font-size: 1em;
-                        }
-                        
-                        button:hover {
-                            background-color: #4cae4c;
-                            transform: scale(1.05);
-                            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-                        }
-                        
-                        /* for recommend books that shows on browser */
-                        .book-gallery {
-                            display: grid;
-                            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-                            gap: 20px;
-                            padding: 20px;
-                        }
-                        
-                        .book-box {
-                            background: white;
-                            border-radius: 10px;
-                            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-                            text-align: center;
-                            padding: 15px;
-                            transition: transform 0.3s ease, box-shadow 0.3s ease;
-                        }
-                        
-                        .book-box:hover {
-                            transform: translateY(-5px);
-                            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-                        }
-                        
-                        .book-box img {
-                            max-width: 100%;
-                            border-radius: 5px;
-                            transition: transform 0.3s ease;
-                        }
-                        
-                        .book-box img:hover {
-                            transform: scale(1.05);
-                        }
-                        
-                        
-                        .heading{
-                            margin-left: 50px;
-                        }
-                        
-                        
-                        /* for the top nav bar  */
-                        nav {
-                            background-color: #f8f8f8;
-                            padding: 10px 0;
-                            text-align: center;
-                        }
-                        
-                        .nav-links {
-                            display: inline-block;
-                        }
-                        
-                        .nav-links a {
-                            margin: 0 15px;
-                            text-decoration: none;
-                            color: #333;
-                            font-weight: bold;
-                        }
-                        
-                        .nav-links a:hover {
-                            text-decoration: underline;
-                        }
-                        html {
-                            scroll-behavior: smooth;
-                        }
-                        
-                        #genre{
-                            cursor:pointer;
-                        }
-                        
-                        
-                        .dark{
-                            background-color: black;
-                            color: white;
-                        
-                        }
-                        .light{
-                            background-color: white;
-                            color: black;
-                        }
-                        
-                        
-                        
-                        body {
-                                    background-color: #ffffff;
-                                }
-                                .text-white {
-                                    color: #0a0a0a00;
-                                }
-                                .box {
-                                    padding: 20px;
-                                }
-                                .card {
-                                    background-color: #f4f2f2;
-                                    border: none;
-                                }
-                                .card img {
-                                    max-height: 300px;
-                                    object-fit: cover;
-                                }
-                        
+.dark-theme .rating-stars {
+    color: var(--warning-color);
+}
+
+/* Dark theme for second page specific elements */
+.dark-theme .second-books-container {
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+.dark-theme .second-navbar {
+    background: rgba(0, 0, 0, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .second-nav-links a {
+    color: var(--text-white);
+}
+
+.dark-theme .second-nav-links a:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .second-page-title {
+    background: linear-gradient(45deg, #fff, #f0f0f0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.dark-theme .second-page-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Enhanced dark mode for book cards */
+.dark-theme .book-card::after {
+    background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.2), transparent);
+}
+
+.dark-theme .book-info {
+    background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+.dark-theme .book-stats {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Add subtle animations for dark mode */
+.dark-theme .book-card:hover {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    border-color: rgba(102, 126, 234, 0.4);
+}
+
+/* Enhanced focus states for accessibility */
+.book-card:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 4px;
+    transform: translateY(-5px) scale(1.02);
+}
+
+.dark-theme .book-card:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 4px;
+}
+
+/* Add loading skeleton for book cards */
+.book-card.loading {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+.dark-theme .book-card.loading {
+    background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+    background-size: 200% 100%;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Add subtle pulse animation for interactive elements */
+.book-card:hover .rating-stars {
+    animation: pulse 1s ease-in-out infinite;
+}
+
+/* Enhanced mobile responsiveness for book cards */
+@media (max-width: 768px) {
+    .book-card {
+        margin-bottom: var(--space-lg);
+    }
+    
+    .book-card:hover {
+        transform: translateY(-5px) scale(1.01);
+    }
+    
+    .book-title {
+        font-size: var(--font-size-base);
+    }
+    
+    .book-author {
+        font-size: var(--font-size-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    .book-card {
+        margin-bottom: var(--space-md);
+    }
+    
+    .book-info {
+        padding: var(--space-md);
+    }
+    
+    .book-stats {
+        flex-direction: column;
+        gap: var(--space-sm);
+        align-items: flex-start;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .container {
+        padding: 0 var(--space-md);
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --font-size-5xl: 2.5rem;
+        --font-size-4xl: 2rem;
+        --font-size-3xl: 1.5rem;
+    }
+    
+    .books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: var(--space-lg);
+    }
+    
+    .nav-links {
+        gap: var(--space-md);
+    }
+    
+    .nav-links a {
+        padding: var(--space-xs) var(--space-md);
+        font-size: var(--font-size-sm);
+    }
+    
+    .row {
+        margin: 0;
+    }
+    
+    .col {
+        padding: 0;
+        margin-bottom: var(--space-lg);
+    }
+}
+
+@media (max-width: 480px) {
+    .books-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .nav-container {
+        flex-direction: column;
+        gap: var(--space-lg);
+    }
+    
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .navbar,
+    .btn,
+    .loading {
+        display: none;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+    
+    body {
+        background: white;
+        color: black;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus styles for accessibility */
+*:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --text-primary: #000;
+        --text-secondary: #333;
+        --bg-primary: #fff;
+        --bg-secondary: #f0f0f0;
+    }
+}

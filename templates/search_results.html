@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookWorld - Search Results</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <style>
+        .search-results-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        
+        .results-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .results-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .results-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .search-query {
+            font-size: 1.2rem;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .results-count {
+            font-size: 1.1rem;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .back-to-search {
+            margin-bottom: 30px;
+        }
+        
+        .back-btn {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .back-btn:hover {
+            background: #5a6fd8;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+        
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .book-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .book-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .book-info {
+            padding: 20px;
+        }
+        
+        .book-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .book-author {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .no-results i {
+            font-size: 4rem;
+            color: #e9ecef;
+            margin-bottom: 20px;
+        }
+        
+        .no-results h3 {
+            margin-bottom: 10px;
+        }
+        
+        .suggestions {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .suggestions h4 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .suggestion-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .suggestion-tag {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .suggestion-tag:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+        }
+        
+        @media (max-width: 768px) {
+            .results-container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .results-title {
+                font-size: 2rem;
+            }
+            
+            .books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body class="search-results-page">
+    <!-- Navigation -->
+    {% include 'navbar.html' %}
+
+    <div class="container">
+        <div class="results-container">
+            <div class="back-to-search">
+                <a href="/search" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Search
+                </a>
+            </div>
+            
+            <div class="results-header">
+                <h1 class="results-title">Search Results</h1>
+                {% if keyword %}
+                <p class="search-query">for "{{ keyword }}"</p>
+                {% endif %}
+                {% if letter and letter != 'all' %}
+                <p class="search-query">starting with "{{ letter.upper() }}"</p>
+                {% endif %}
+                <p class="results-count">{{ books|length }} book{{ 's' if books|length != 1 else '' }} found</p>
+            </div>
+
+            {% if books|length > 0 %}
+            <div class="books-grid">
+                {% for book in books %}
+                <div class="book-card" data-book-title="{{ book['Book-Title'] }}">
+                    <img src="{{ book['Image-URL-M'] }}" 
+                         alt="{{ book['Book-Title'] }}" 
+                         class="book-image"
+                         onerror="this.src='https://via.placeholder.com/300x400/667eea/ffffff?text=Book+Cover'">
+                    <div class="book-info">
+                        <h3 class="book-title">{{ book['Book-Title'] }}</h3>
+                        <p class="book-author">{{ book['Book-Author'] }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <h3>No books found</h3>
+                <p>Try adjusting your search terms or browse by letter</p>
+                
+                <div class="suggestions">
+                    <h4>Search Suggestions:</h4>
+                    <div class="suggestion-tags">
+                        <span class="suggestion-tag" onclick="searchByKeyword('fiction')">Fiction</span>
+                        <span class="suggestion-tag" onclick="searchByKeyword('mystery')">Mystery</span>
+                        <span class="suggestion-tag" onclick="searchByKeyword('romance')">Romance</span>
+                        <span class="suggestion-tag" onclick="searchByKeyword('science')">Science</span>
+                        <span class="suggestion-tag" onclick="searchByKeyword('history')">History</span>
+                        <span class="suggestion-tag" onclick="searchByKeyword('fantasy')">Fantasy</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Theme functionality is now handled by the navbar component
+
+        function selectBook(title) {
+            // Redirect to recommendation page with the selected book
+            window.location.href = '/recommend?book=' + encodeURIComponent(title);
+        }
+        
+        // Add click event listener for book cards
+        document.addEventListener('click', function(e) {
+            const bookCard = e.target.closest('.book-card');
+            if (bookCard) {
+                const bookTitle = bookCard.getAttribute('data-book-title');
+                if (bookTitle) {
+                    selectBook(bookTitle);
+                }
+            }
+        });
+        
+        function searchByKeyword(keyword) {
+            // Redirect to search page with the keyword
+            window.location.href = '/search?q=' + encodeURIComponent(keyword);
+        }
+        
+        // Add entrance animation for book cards
+        $(document).ready(function() {
+            $('.book-card').each(function(index) {
+                $(this).css({
+                    'opacity': '0',
+                    'transform': 'translateY(30px)'
+                });
+                
+                setTimeout(() => {
+                    $(this).css({
+                        'opacity': '1',
+                        'transform': 'translateY(0)',
+                        'transition': 'all 0.6s ease'
+                    });
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
+

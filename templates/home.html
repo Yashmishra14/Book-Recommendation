@@ -6,323 +6,109 @@
     <title>BookWorld - Discover Your Next Read</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 8s ease infinite;
+        .home-search-options {
+            margin-top: 30px;
             display: flex;
             justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            position: relative;
+            gap: 20px;
         }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Floating particles background */
-        .particles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .particle:nth-child(1) { width: 10px; height: 10px; left: 10%; animation-delay: 0s; }
-        .particle:nth-child(2) { width: 15px; height: 15px; left: 20%; animation-delay: 1s; }
-        .particle:nth-child(3) { width: 8px; height: 8px; left: 30%; animation-delay: 2s; }
-        .particle:nth-child(4) { width: 12px; height: 12px; left: 40%; animation-delay: 3s; }
-        .particle:nth-child(5) { width: 6px; height: 6px; left: 50%; animation-delay: 4s; }
-        .particle:nth-child(6) { width: 14px; height: 14px; left: 60%; animation-delay: 5s; }
-        .particle:nth-child(7) { width: 9px; height: 9px; left: 70%; animation-delay: 1.5s; }
-        .particle:nth-child(8) { width: 11px; height: 11px; left: 80%; animation-delay: 2.5s; }
-        .particle:nth-child(9) { width: 7px; height: 7px; left: 90%; animation-delay: 3.5s; }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            50% { transform: translateY(-100px) rotate(180deg); }
-        }
-
-        .main-container {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 30px;
-            padding: 60px 40px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        
+        .home-search-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            max-width: 500px;
-            width: 90%;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-
-        .main-container:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.3);
-            background: rgba(255, 255, 255, 0.15);
+        
+        .home-search-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
-
-        .logo-container {
-            margin-bottom: 30px;
-            position: relative;
+        
+        .home-search-btn i {
+            font-size: 1.2rem;
         }
-
-        .logo {
+        
+        .home-logo-placeholder {
             width: 120px;
             height: 120px;
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .main-container:hover .logo {
-            transform: rotate(360deg) scale(1.1);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .logo-glow {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
-            background-size: 400% 400%;
-            animation: gradientShift 3s ease infinite;
-            z-index: -1;
-            opacity: 0.3;
-        }
-
-        h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 15px;
-            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(45deg, #fff, #f0f0f0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        h2 {
-            font-size: 1.8rem;
-            font-weight: 300;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 40px;
-            letter-spacing: 2px;
-        }
-
-        .bounce-text {
-            display: inline-block;
-            animation: bounce 2s infinite;
-            color: #ffd700;
-            font-weight: 600;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0);
-            }
-            40% {
-                transform: translateY(-15px);
-            }
-            60% {
-                transform: translateY(-8px);
-            }
-        }
-
-        .hover-message {
-            position: absolute;
-            bottom: -60px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
-            padding: 15px 25px;
-            border-radius: 25px;
-            font-weight: 500;
-            opacity: 0;
-            transform: translateX(-50%) translateY(20px) scale(0.8);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .main-container:hover .hover-message {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0) scale(1);
-        }
-
-        .enter-icon {
-            display: inline-block;
-            margin-left: 10px;
-            font-size: 1.2rem;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        /* Custom cursor */
-        .custom-cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            pointer-events: none;
-            z-index: 9999;
-            transition: all 0.1s ease;
-            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
-        }
-
-        .custom-cursor::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 107, 107, 0.2);
-            animation: ripple 2s infinite;
-        }
-
-        @keyframes ripple {
-            0% {
-                transform: translate(-50%, -50%) scale(0);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 0;
-            }
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .main-container {
-                padding: 40px 30px;
-                margin: 20px;
-            }
-            
-            h1 {
-                font-size: 2.5rem;
-            }
-            
-            h2 {
-                font-size: 1.4rem;
-            }
-            
-            .logo {
-                width: 100px;
-                height: 100px;
-            }
-        }
-
-        /* Loading animation */
-        .loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
-            justify-content: center;
             align-items: center;
-            z-index: 10000;
-            transition: opacity 0.5s ease;
-        }
-
-        .loading.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            backdrop-filter: blur(10px);
             border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: logoFloat 3s ease-in-out infinite;
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
     </style>
 </head>
-<body>
+<body class="home-page">
+    <!-- Background Animation -->
+    <div class="home-bg-animation"></div>
+    
     <!-- Loading screen -->
-    <div class="loading" id="loading">
-        <div class="spinner"></div>
+    <div class="loading-screen" id="loading">
+        <div class="loading-spinner"></div>
     </div>
 
     <!-- Floating particles -->
-    <div class="particles">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
+    <div class="home-particles">
+        <div class="home-particle"></div>
+        <div class="home-particle"></div>
+        <div class="home-particle"></div>
+        <div class="home-particle"></div>
+        <div class="home-particle"></div>
+        <div class="home-particle"></div>
+        <div class="home-particle"></div>
+        <div class="home-particle"></div>
+        <div class="home-particle"></div>
     </div>
 
     <!-- Main content -->
-    <div class="main-container" onclick="searchBooks()">
-        <div class="logo-container">
-            <div class="logo-glow"></div>
-            <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="BookWorld Logo" class="logo">
+    <div class="home-main-container" onclick="searchBooks()">
+        <div class="home-logo-container">
+            <div class="home-logo-glow"></div>
+            <div class="home-logo-placeholder">
+                <i class="fas fa-book-open"></i>
+            </div>
         </div>
         
-        <h1>BookWorld</h1>
-        <h2>
-            Discover Amazing <span class="bounce-text">Books</span>!
+        <h1 class="home-title">BookWorld</h1>
+        <h2 class="home-subtitle">
+            Discover Amazing <span class="home-bounce-text">Books</span>!
         </h2>
         
-        <div class="hover-message">
-            Click to Enter <i class="fas fa-arrow-right enter-icon"></i>
+        <div class="home-hover-message">
+            Click to Enter <i class="fas fa-arrow-right home-enter-icon"></i>
+        </div>
+        
+        <div class="home-search-options">
+            <button class="home-search-btn" onclick="goToSearch()">
+                <i class="fas fa-search"></i>
+                A-Z Search
+            </button>
         </div>
     </div>
 
@@ -341,7 +127,15 @@
             // Add loading effect before redirect
             document.getElementById('loading').classList.remove('hidden');
             setTimeout(() => {
-                window.location.href = "/login";
+                window.location.href = "/second";
+            }, 500);
+        }
+        
+        function goToSearch(){
+            // Add loading effect before redirect
+            document.getElementById('loading').classList.remove('hidden');
+            setTimeout(() => {
+                window.location.href = "/search";
             }, 500);
         }
         
@@ -353,16 +147,16 @@
         });
 
         // Add hover effects to interactive elements
-        document.querySelector('.main-container').addEventListener('mouseenter', function() {
+        document.querySelector('.home-main-container').addEventListener('mouseenter', function() {
             document.getElementById('cursor').style.transform = 'scale(1.5)';
         });
 
-        document.querySelector('.main-container').addEventListener('mouseleave', function() {
+        document.querySelector('.home-main-container').addEventListener('mouseleave', function() {
             document.getElementById('cursor').style.transform = 'scale(1)';
         });
 
         // Add click ripple effect
-        document.querySelector('.main-container').addEventListener('click', function(e) {
+        document.querySelector('.home-main-container').addEventListener('click', function(e) {
             const ripple = document.createElement('div');
             ripple.style.position = 'absolute';
             ripple.style.borderRadius = '50%';
@@ -391,7 +185,7 @@
 
         // Add entrance animation
         window.addEventListener('load', function() {
-            const container = document.querySelector('.main-container');
+            const container = document.querySelector('.home-main-container');
             container.style.opacity = '0';
             container.style.transform = 'translateY(50px)';
             
