@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookWorld - Search Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+</head>
+<body class="search-results-page">
+    <!-- Background Animation -->
+    <div class="search-results-bg-animation"></div>
+    
+    <!-- Navigation -->
+    <nav class="search-results-navbar">
+        <div class="search-results-nav-container">
+            <a href="/" class="search-results-logo">
+                <i class="fas fa-book-open"></i>
+                BookWorld
+            </a>
+            <ul class="search-results-nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/second">Popular Books</a></li>
+                <li><a href="/recommend">Recommendations</a></li>
+                <li><a href="/search" class="active">Search</a></li>
+                <li><a href="/about">About</a></li>
+            </ul>
+            <button class="search-results-theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+                Dark Mode
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="search-results-main-content">
+        <div class="search-results-header">
+            <h1 class="search-results-title">Search Results</h1>
+            {% if keyword %}
+                <p class="search-results-subtitle">Results for "{{ keyword }}"</p>
+            {% endif %}
+            {% if letter and letter != 'all' %}
+                <p class="search-results-subtitle">Books starting with "{{ letter }}"</p>
+            {% endif %}
+        </div>
+
+        <!-- Back to Search -->
+        <div class="back-to-search">
+            <a href="/search" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back to Search
+            </a>
+        </div>
+
+        <!-- Results Count -->
+        <div class="results-info">
+            <p class="results-count">{{ books|length }} book{{ 's' if books|length != 1 else '' }} found</p>
+        </div>
+
+        <!-- Books Grid -->
+        <div class="books-container">
+            {% if books %}
+                <div class="books-grid">
+                    {% for book in books %}
+                    <div class="book-card" data-title="{{ book['Book-Title'] }}" data-author="{{ book['Book-Author'] }}">
+                        <div class="book-image-container">
+                            <img src="{{ book['Image-URL-M'] }}" 
+                                 alt="{{ book['Book-Title'] }}" 
+                                 class="book-image"
+                                 onerror="this.src='https://via.placeholder.com/300x400/667eea/ffffff?text=Book+Cover'">
+                            <div class="book-overlay">
+                                <button class="book-action-btn" onclick="getRecommendations('{{ book['Book-Title'] }}')">
+                                    <i class="fas fa-search-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="book-info">
+                            <h3 class="book-title">{{ book['Book-Title'] }}</h3>
+                            <p class="book-author">{{ book['Book-Author'] }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-results">
+                    <div class="no-results-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>No books found</h3>
+                    <p>Try adjusting your search terms or browse by letter</p>
+                    <a href="/search" class="search-again-btn">
+                        <i class="fas fa-search"></i>
+                        Search Again
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        let isDark = localStorage.getItem('theme') === 'dark';
+
+        if (isDark) {
+            body.classList.add('dark-theme');
+            updateThemeToggle(true);
+        }
+
+        function updateThemeToggle(darkMode) {
+            if (darkMode) {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+            }
+        }
+
+        themeToggle.addEventListener('click', function() {
+            isDark = !isDark;
+            body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeToggle(isDark);
+        });
+
+        // Get recommendations function
+        function getRecommendations(bookTitle) {
+            window.location.href = `/recommend?book=${encodeURIComponent(bookTitle)}`;
+        }
+
+        // Add entrance animations
+        window.addEventListener('load', function() {
+            const bookCards = document.querySelectorAll('.book-card');
+            bookCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = `all 0.6s ease ${index * 0.1}s`;
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 + (index * 100));
+            });
+        });
+    </script>
+</body>
+</html>

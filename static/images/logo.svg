@@ -1,0 +1,14 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="120" height="120" rx="60" fill="url(#gradient0_linear_1_1)"/>
+<path d="M30 40H90V80H30V40Z" fill="white"/>
+<path d="M35 45H85V50H35V45Z" fill="#667eea"/>
+<path d="M35 55H85V65H35V55Z" fill="#667eea"/>
+<path d="M35 70H40V75H35V70Z" fill="#667eea"/>
+<path d="M40 70H85V75H40V70Z" fill="#667eea"/>
+<defs>
+<linearGradient id="gradient0_linear_1_1" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+<stop stop-color="#667eea"/>
+<stop offset="1" stop-color="#764ba2"/>
+</linearGradient>
+</defs>
+</svg>
