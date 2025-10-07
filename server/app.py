@@ -1,8 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, abort, send_from_directory
+from flask_cors import CORS
 import pickle
 import numpy as np
 import time
 import logging
+import os
 from functools import wraps
 
 
@@ -80,18 +82,21 @@ def get_books_by_letter(letter):
     
     return _books_by_letter_cache[letter]
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='client/build/static', template_folder='client/build')
 app.secret_key = 'your_secret_key_here_change_in_production'
 google_drive_base_url = "https://drive.google.com/file/d/"
+
+# Enable CORS for all routes
+CORS(app, origins=['http://localhost:3000', 'http://127.0.0.1:3000'])
 
 # Error handlers
 @app.errorhandler(404)
 def not_found(error):
-    return render_template('404.html'), 404
+    return send_from_directory('client/build', 'index.html'), 404
 
 @app.errorhandler(500)
 def internal_error(error):
-    return render_template('500.html'), 500
+    return jsonify({'error': 'Internal server error'}), 500
 
 # Decorator for error handling
 def handle_errors(f):
@@ -102,46 +107,45 @@ def handle_errors(f):
         except Exception as e:
             logger.error(f"Error in {f.__name__}: {str(e)}")
             flash('An error occurred. Please try again.', 'error')
-            return redirect(url_for('home'))
+            return redirect('/')
     return decorated_function
 
 
+# Serve React App
 @app.route('/')
-def home():
-    return render_template('home.html')
+def serve_react_app():
+    return send_from_directory('client/build', 'index.html')
 
+@app.route('/<path:path>')
+def serve_react_routes(path):
+    # Check if the path is a static file
+    if os.path.exists(os.path.join('client/build', path)):
+        return send_from_directory('client/build', path)
+    # Otherwise serve the React app for client-side routing
+    return send_from_directory('client/build', 'index.html')
 
-@app.route('/second')
-def second():
-    return render_template('second.html' ,book_name=list(popular_df['Book-Title'].values), author=list(popular_df['Book-Author'].values),image=list(popular_df['Image-URL-M'].values), votes=list(popular_df['Book-Rating'].values), rating  =list(popular_df['avg_ratings'].values))
+# API Routes
+@app.route('/api/popular')
+def api_popular():
+    """API endpoint for popular books"""
+    return jsonify({
+        'data': [
+            {
+                'book_name': book['Book-Title'],
+                'author': book['Book-Author'],
+                'image': book['Image-URL-M'],
+                'votes': book['Book-Rating'],
+                'rating': book['avg_ratings']
+            }
+            for _, book in popular_df.iterrows()
+        ]
+    })
 
-@app.route('/recommend')
-def recommend():
-    book_title = request.args.get('book', '')
-    return render_template('recommend.html', book_title=book_title)
-
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
-@app.route('/login')
-def login_redirect():
-    """Redirect login attempts to search page since we don't have a login system"""
-    return redirect(url_for('search'))
-
-@app.route('/search')
-def search():
-    """A-Z keyword search page - optimized with caching"""
-    start_time = time.time()
-    
-    # Get cached books and load only first 20 for ultra-fast initial load
+@app.route('/api/books')
+def api_books():
+    """API endpoint for all books"""
     all_books = get_optimized_books_data()
-    initial_books = all_books[:20]  # Load only 20 books initially
-    
-    load_time = time.time() - start_time
-    logger.info(f"Search page loaded in {load_time:.3f} seconds with {len(initial_books)} books")
-    
-    return render_template('search.html', all_books=initial_books)
+    return jsonify({'data': all_books})
 
 def get_file_id(book_id):
     # Implement your logic to retrieve the file ID for a given book ID
@@ -156,14 +160,14 @@ def index():
     ]
     return render_template("index.html", books=books)
 
-@app.route('/recommend_books', methods=['POST'])
+@app.route('/api/recommend_books', methods=['POST'])
 @handle_errors
 def recommend_book():
-    user_input = request.form.get('user_input', '').strip()
+    data = request.get_json()
+    user_input = data.get('user_input', '').strip() if data else request.form.get('user_input', '').strip()
     
     if not user_input:
-        flash('Please enter a book title.', 'warning')
-        return redirect(url_for('recommend'))
+        return jsonify({'error': 'Please enter a book title.'}), 400
     
     logger.info(f"Getting recommendations for: {user_input}")
     
@@ -172,8 +176,10 @@ def recommend_book():
     
     if book_exists.empty:
         # Book doesn't exist in the database at all
-        flash(f'Book "{user_input}" not found in our database. Please check the spelling or try a different book.', 'warning')
-        return render_template('recommend.html', data=None, error_message=f'Book "{user_input}" not found in our database. Please try one of these popular books:')
+        return jsonify({
+            'error': f'Book "{user_input}" not found in our database. Please check the spelling or try a different book.',
+            'data': []
+        }), 404
     
     # Check if the book exists in the pivot table (for collaborative filtering)
     book_indices = np.where(pt.index == user_input)[0]
@@ -201,7 +207,10 @@ def recommend_book():
             for _, book in author_books.head(5).iterrows():
                 data.append([book['Book-Title'], book['Book-Author'], book['Image-URL-M']])
         
-        return render_template('recommend.html', data=data, fallback_message=f'Book "{user_input}" is not in our recommendation database, but here are some suggestions:')
+        return jsonify({
+            'data': data,
+            'message': f'Book "{user_input}" is not in our recommendation database, but here are some suggestions:'
+        })
     
     # Book exists in pivot table - use collaborative filtering
     index = book_indices[0]
@@ -221,15 +230,16 @@ def recommend_book():
         
     logger.info(f"Found {len(data)} recommendations for: {user_input}")
     
-    return render_template('recommend.html', data=data)
+    return jsonify({'data': data})
 
-@app.route('/search_books', methods=['POST'])
+@app.route('/api/search_books', methods=['POST'])
 @handle_errors
 def search_books_api():
     """API endpoint for searching books by keyword - optimized"""
     start_time = time.time()
-    keyword = request.form.get('keyword', '').strip()
-    letter = request.form.get('letter', '').strip()
+    data = request.get_json()
+    keyword = data.get('keyword', '').strip() if data else request.form.get('keyword', '').strip()
+    letter = data.get('letter', '').strip() if data else request.form.get('letter', '').strip()
     
     # Use cached data instead of DataFrame operations
     all_books = get_books_by_letter(letter if letter and letter != 'all' else 'all')
@@ -238,8 +248,8 @@ def search_books_api():
     if keyword:
         books_list = [
             book for book in all_books
-            if (keyword.lower() in book['Book-Title'].lower() or 
-                keyword.lower() in book['Book-Author'].lower())
+            if (keyword.lower() in str(book['Book-Title']).lower() or 
+                keyword.lower() in str(book['Book-Author']).lower())
         ]
     else:
         books_list = all_books
@@ -247,10 +257,10 @@ def search_books_api():
     search_time = time.time() - start_time
     logger.info(f"Search completed in {search_time:.3f} seconds. Results: {len(books_list)}")
     
-    return render_template('search_results.html', books=books_list, keyword=keyword, letter=letter)
+    return jsonify({'data': books_list})
 
 
-@app.route('/search_books_api', methods=['GET'])
+@app.route('/api/search_suggestions', methods=['GET'])
 def search_books_json():
     """JSON API for real-time search suggestions - optimized"""
     keyword = request.args.get('q', '').strip()
@@ -279,7 +289,7 @@ def search_books_json():
     
     return jsonify({'books': results})
 
-@app.route('/load_more_books', methods=['GET'])
+@app.route('/api/load_more_books', methods=['GET'])
 def load_more_books():
     """Load more books for the search page - optimized with caching"""
     start_time = time.time()
@@ -297,7 +307,7 @@ def load_more_books():
     print(f"Load more books completed in {load_time:.3f} seconds. Loaded: {len(results)}")
     
     return jsonify({
-        'books': results, 
+        'data': results, 
         'has_more': len(results) == limit,
         'total_books': len(all_books)
     })
